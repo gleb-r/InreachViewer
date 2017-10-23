@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<people>
+    <person>
+        <company>ATT</company>
+        <name>Gleb</name>
+        <city>Spb</city>
+        <phone oc="android" version="4.4">yes</phone>
+        <trevel>
+            <country>Russia</country>
+            <country>Ukraine</country>
+            <country>Germany</country>
+        </trevel>
+    </person>
+</people>
