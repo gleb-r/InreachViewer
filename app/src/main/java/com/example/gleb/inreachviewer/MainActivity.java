@@ -2,12 +2,20 @@ package com.example.gleb.inreachviewer;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -15,56 +23,55 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = MainActivity.class.getName();
-    private String mTempStr = "";
+import javax.xml.parsers.ParserConfigurationException;
 
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
+    private static final String TAG = MainActivity.class.getName();
+    private GoogleMap mMap;
+    private List<LatLng> mLatLngList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        new FetchItemsTask().execute();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
 
-        try {
-            XmlPullParser mParser = getResources().getXml(R.xml.people);
-            while (mParser.getEventType() != XmlPullParser.END_DOCUMENT) {
-                switch (mParser.getEventType()) {
-                    case XmlPullParser.START_DOCUMENT:
-                        Log.i(TAG, "START DOCUMENT");
-                        break;
-                    case XmlPullParser.START_TAG:
-                        Log.i(TAG, "START TAG: tag name = " + mParser.getName()
-                                + ", depth = " + mParser.getDepth() + ", attributes count = "
-                                + mParser.getAttributeCount());
-                        mTempStr = "";
-                        for (int i = 0; i < mParser.getAttributeCount(); i++) {
-                            mTempStr += mParser.getAttributeName(i) + " = "
-                                    + mParser.getAttributeValue(i) + ", ";
-                        }
-                        if (!TextUtils.isEmpty(mTempStr)) {
-                            Log.i(TAG, "Attributes: " + mTempStr);
-                        }
-                        break;
-                    case XmlPullParser.END_TAG:
-                        Log.i(TAG, "END TAG: name = " + mParser.getName());
-                        break;
-                    case XmlPullParser.TEXT:
-                        Log.i(TAG, "text = " + mParser.getText());
-                        break;
-                    default:
-                        break;
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        FetchItemsTask fetchItemsTask = new FetchItemsTask();
+        fetchItemsTask.execute();
+    }
+
+    private void drawPoints(final List<LatLng> pointsList) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                PolylineOptions polylineOptions = new PolylineOptions();
+                LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+                for (LatLng point : pointsList) {
+                    MarkerOptions markerOptions = new MarkerOptions()
+                            .position(point)
+                            .title(point.toString());
+                    mMap.addMarker(markerOptions);
+                    polylineOptions.add(point);
+                    boundsBuilder.include(point);
                 }
-                mParser.next();
+                mMap.addPolyline(polylineOptions);
+                int width = getResources().getDisplayMetrics().widthPixels;
+                int height = getResources().getDisplayMetrics().heightPixels;
+                CameraUpdate cameraUpdate = CameraUpdateFactory
+                        .newLatLngBounds(boundsBuilder.build(), width, height, 100);
+                mMap.animateCamera(cameraUpdate);
             }
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
 
     }
 
@@ -78,7 +85,17 @@ public class MainActivity extends AppCompatActivity {
             } catch (ParseException e) {
                 Log.e(TAG, "Failed parse", e);
             }
-            new InreachApi().fetchPoints(d1, Calendar.getInstance().getTime());
+            String kmlStr = new InreachApi().fetchPoints(d1, Calendar.getInstance().getTime());
+            try {
+                mLatLngList = InreachKmlParser.parse(kmlStr);
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            }
+            drawPoints(mLatLngList);
             return null;
         }
     }

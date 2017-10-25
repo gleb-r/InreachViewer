@@ -37,6 +37,7 @@ public class InreachApi {
             if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
                 throw new IOException(connection.getResponseMessage() + ": with" + urlSpec);
             }
+
             int bytesRead = 0;
             byte[] buffer = new byte[1024];
             while ((bytesRead = in.read(buffer)) > 0) {
@@ -50,25 +51,13 @@ public class InreachApi {
         }
     }
 
+
     public String getUrlString(String urlSpec) throws IOException {
         return new String(getUrlBytes(urlSpec));
     }
 
-    public String buildUrl(Date startDate, Date endDate) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US);
-        Uri.Builder uriBuilder = Uri.parse(INREACH_API_URL)
-                .buildUpon()
-                .appendPath(MAPSHARE_NAME);
-        if (startDate != null) {
-            uriBuilder.appendQueryParameter("d1", dateFormat.format(startDate));
-        }
-        if (endDate != null) {
-            uriBuilder.appendQueryParameter("d2", dateFormat.format(endDate));
-        }
-        return uriBuilder.build().toString();
-    }
 
-    public void fetchPoints(Date startDate, Date endDate) {
+    public String fetchPoints(Date startDate, Date endDate) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'", Locale.US);
         Uri.Builder uriBuilder = Uri.parse(INREACH_API_URL)
                 .buildUpon()
@@ -81,22 +70,13 @@ public class InreachApi {
         }
         String url = uriBuilder.build().toString();
         Log.i(TAG, "url=" + url);
+        String xmlString = "";
         try {
-            String xmlString = getUrlString(url);
-
-            StringBuilder stringBuilder = new StringBuilder(xmlString);
-            int start = 0;
-            int end;
-            while ((end = stringBuilder.indexOf("\n", start)) != -1) {
-                Log.i(TAG, stringBuilder.substring(start, end));
-                start = end + 1;
-            }
-            Log.i(TAG, stringBuilder.substring(start));
+            xmlString = getUrlString(url);
 
         } catch (IOException e) {
             Log.e(TAG, "failed ", e);
         }
+        return xmlString;
     }
-
-
 }
