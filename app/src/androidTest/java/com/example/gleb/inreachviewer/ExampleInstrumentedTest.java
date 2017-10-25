@@ -20,7 +20,8 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
+        String string = new InreachApi().fetchPoints(null,null);
 
-        assertEquals("com.example.gleb.inreachviewer", appContext.getPackageName());
+        assertTrue(string.length()>100);
     }
 }
