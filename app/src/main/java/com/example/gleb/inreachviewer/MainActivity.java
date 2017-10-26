@@ -1,5 +1,6 @@
 package com.example.gleb.inreachviewer;
 
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -55,7 +56,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                PolylineOptions polylineOptions = new PolylineOptions();
                 LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
                 BitmapDescriptor icon_point = BitmapDescriptorFactory.fromResource(R.drawable.marker_white);
                 BitmapDescriptor icon_last_point = BitmapDescriptorFactory.fromResource(R.drawable.last_point_red);
@@ -72,10 +72,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                                 .rotation(rotation);
                     }
                     mMap.addMarker(markerOptions);
-                    polylineOptions.add(point.getLatLng());
                     boundsBuilder.include(point.getLatLng());
                 }
-                mMap.addPolyline(polylineOptions);
+                drawLinesBetweenPoints(pointsList);
                 int width = getResources().getDisplayMetrics().widthPixels;
                 int height = getResources().getDisplayMetrics().heightPixels;
                 CameraUpdate cameraUpdate = CameraUpdateFactory
@@ -86,13 +85,32 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    private void drawLinesBetweenPoints(List<InreachPoint> points) {
+
+        for (int i = 1; i < points.size(); i++) {
+            InreachPoint prewPoint = points.get(i - 1);
+            InreachPoint currentPoint = points.get(i);
+            if (currentPoint.getEvent().contains("Tracking turned on from device")
+                    || prewPoint.getEvent().contains("Tracking turned off from device")) {
+                continue;
+            }
+            PolylineOptions polyline = new PolylineOptions();
+            polyline.add(points.get(i - 1).getLatLng(), points.get(i).getLatLng())
+                    .color(Color.GRAY)
+                    .width(6);
+
+            mMap.addPolyline(polyline);
+        }
+    }
+
+
     private class FetchItemsTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
             Date d1 = null;
             try {
-                d1 = dateFormat.parse("2017-10-19 09:30");
+                d1 = dateFormat.parse("2017-09-19 09:30");
             } catch (ParseException e) {
                 Log.e(TAG, "Failed parse", e);
             }
