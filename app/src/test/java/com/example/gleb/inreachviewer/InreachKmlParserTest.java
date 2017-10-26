@@ -755,8 +755,25 @@ public class InreachKmlParserTest {
                 "    </Folder>\n" +
                 "  </Document>\n" +
                 "</kml>";
-        List<LatLng> points = InreachKmlParser.parse(stringXml);
+        List<InreachPoint> pointsList = InreachKmlParser.parse(stringXml);
+        InreachPoint lastPointInList = pointsList.get(pointsList.size()-1);
         LatLng expectedPoint = new LatLng(59.654313, 28.994808);
-        Assert.assertEquals(expectedPoint, points.get(points.size()-1));
+        Assert.assertEquals(expectedPoint, lastPointInList.getLatLng());
+
+        String expectedTime = "5/26/2017 5:46:00 PM";
+        Assert.assertEquals(expectedTime, lastPointInList.getTimeLocal());
+
+        String expectedVelocity = "0.0 km/h";
+        Assert.assertEquals(expectedVelocity, lastPointInList.getVelocity());
+
+        long expectedId = 125834198;
+        Assert.assertEquals(expectedId, lastPointInList.getId());
+
+        float expectedCourse = 0;
+        Assert.assertEquals(expectedCourse, lastPointInList.getCourse(), 0.1);
+
+
+
+
     }
 }

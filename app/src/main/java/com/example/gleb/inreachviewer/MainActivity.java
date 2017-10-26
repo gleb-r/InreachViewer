@@ -10,6 +10,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -55,11 +57,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             public void run() {
                 PolylineOptions polylineOptions = new PolylineOptions();
                 LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-                for (InreachPoint point : pointsList) {
+                BitmapDescriptor icon_point = BitmapDescriptorFactory.fromResource(R.drawable.marker_white);
+                BitmapDescriptor icon_last_point = BitmapDescriptorFactory.fromResource(R.drawable.last_point_red);
+                for (int i = 0; i < pointsList.size(); i++) {
+                    InreachPoint point = pointsList.get(i);
+
                     MarkerOptions markerOptions = new MarkerOptions()
                             .position(point.getLatLng())
-                            .title(point.getTimeLocal().toString())
+                            .title(point.getTimeLocal())
                             .snippet(point.getTag());
+                    if (i == pointsList.size() - 1) {
+                        float rotation = point.getCourse();
+                        markerOptions.icon(icon_last_point)
+                                .rotation(rotation);
+                    }
                     mMap.addMarker(markerOptions);
                     polylineOptions.add(point.getLatLng());
                     boundsBuilder.include(point.getLatLng());
@@ -81,15 +92,15 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
             Date d1 = null;
             try {
-                d1 = dateFormat.parse("2017-10-19 13:30");
+                d1 = dateFormat.parse("2017-10-19 09:30");
             } catch (ParseException e) {
                 Log.e(TAG, "Failed parse", e);
             }
             String kmlStr = new InreachApi().fetchPoints(d1, Calendar.getInstance().getTime());
             try {
                 mPointsList = InreachKmlParser.parse(kmlStr);
-                for (InreachPoint point: mPointsList) {
-                    Log.i(TAG,point.toString()+ "\n");
+                for (InreachPoint point : mPointsList) {
+                    Log.i(TAG, point.toString() + "\n");
                 }
 
             } catch (ParserConfigurationException e) {

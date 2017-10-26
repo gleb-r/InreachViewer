@@ -17,7 +17,7 @@ public class InreachPoint {
     private LatLng latLng;
     private double elevation;
     private String velocity;
-    private String course;
+    private float course;
     private boolean inEmergency;
     private String text;
     private String event;
@@ -118,11 +118,11 @@ public class InreachPoint {
         this.velocity = velocity;
     }
 
-    public String getCourse() {
+    public float getCourse() {
         return course;
     }
 
-    public void setCourse(String course) {
+    public void setCourse(float course) {
         this.course = course;
     }
 

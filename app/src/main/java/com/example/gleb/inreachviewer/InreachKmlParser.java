@@ -1,7 +1,5 @@
 package com.example.gleb.inreachviewer;
 
-import android.util.Log;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Document;
@@ -45,14 +43,16 @@ public class InreachKmlParser {
         Document document = builder.parse(inputSource);
         document.getDocumentElement().normalize();
         NodeList pointsList = document.getElementsByTagName("Placemark");
-        Log.i(TAG, "placemark lenght=" + pointsList.getLength());
         for (int i = 0; i < pointsList.getLength(); i++) {
-            InreachPoint point = parsePoint(pointsList.item(i));
-            if (point != null) {
-                inreachPoints.add(point);
-            } else {
-                Log.i(TAG, "point =null");
+            if (((Element)pointsList.item(i)).getElementsByTagName("Point").getLength() != 0) {
+                InreachPoint point = parsePoint(pointsList.item(i));
+                if (point != null) {
+                    inreachPoints.add(point);
+                }
+            } else if  (((Element)pointsList.item(i)).getElementsByTagName("LineString").getLength() != 0) {
+
             }
+
         }
         return inreachPoints;
     }
@@ -68,7 +68,6 @@ public class InreachKmlParser {
             }
             Node lineCoordinatesNode = ((Element) lineStringNode.item(0)).getElementsByTagName("coordinates").item(0);
             String lineCoorinates = lineCoordinatesNode.getTextContent().trim();
-            Log.i(TAG, "lineCoordinates= " + lineCoorinates);
             return null;
         }
         NodeList coordinatesList = ((Element) pointNodeList.item(0))
@@ -94,13 +93,11 @@ public class InreachKmlParser {
         //ExternalData
         NodeList externalNodeList = ((Element) placemarkNode)
                 .getElementsByTagName("ExtendedData");
-        Log.i(TAG, "externalNodeList length =" + externalNodeList.getLength());
         if (externalNodeList.getLength() != 1) {
             return null;
         }
         NodeList dataNodeList = ((Element) externalNodeList.item(0))
                 .getElementsByTagName("Data");
-        Log.i(TAG, "dataNodeList length =" + dataNodeList.getLength());
         if (dataNodeList.getLength() == 0) {
             return null;
         }
@@ -110,7 +107,6 @@ public class InreachKmlParser {
                     .getAttributes()
                     .getNamedItem("name");
             if (attrbuteNode == null) {
-                Log.i(TAG, "attebute=" + attrbuteNode);
                 return null;
             }
             String dataAttributeName = attrbuteNode.getNodeValue().trim();
@@ -135,8 +131,7 @@ public class InreachKmlParser {
                     point.setVelocity(dataValue);
                     break;
                 case "Course":
-                    String[] course = dataValue.split(" ");
-                    point.setCourse(course[0]+"°");
+                    point.setCourse(parseCourseToFloat(dataValue));
                     break;
                 case "In Emergency":
                     point.setInEmergency(parseBoolValue(dataValue));
@@ -177,6 +172,10 @@ public class InreachKmlParser {
 
     private static boolean parseBoolValue(String boolString) {
         return boolString.equals("True") || boolString.equals("1");
+    }
+
+    private static float parseCourseToFloat(String courseStr) {
+        return Float.valueOf(courseStr.split(" ")[0]);
     }
 }
 
