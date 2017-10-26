@@ -10,7 +10,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -31,7 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
     private static final String TAG = MainActivity.class.getName();
     private GoogleMap mMap;
-    private List<LatLng> mLatLngList;
+    private List<InreachPoint> mPointsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,19 +49,20 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         fetchItemsTask.execute();
     }
 
-    private void drawPoints(final List<LatLng> pointsList) {
+    private void drawPoints(final List<InreachPoint> pointsList) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 PolylineOptions polylineOptions = new PolylineOptions();
                 LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
-                for (LatLng point : pointsList) {
+                for (InreachPoint point : pointsList) {
                     MarkerOptions markerOptions = new MarkerOptions()
-                            .position(point)
-                            .title(point.toString());
+                            .position(point.getLatLng())
+                            .title(point.getTimeLocal().toString())
+                            .snippet(point.getTag());
                     mMap.addMarker(markerOptions);
-                    polylineOptions.add(point);
-                    boundsBuilder.include(point);
+                    polylineOptions.add(point.getLatLng());
+                    boundsBuilder.include(point.getLatLng());
                 }
                 mMap.addPolyline(polylineOptions);
                 int width = getResources().getDisplayMetrics().widthPixels;
@@ -87,15 +87,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
             String kmlStr = new InreachApi().fetchPoints(d1, Calendar.getInstance().getTime());
             try {
-                mLatLngList = InreachKmlParser.parse(kmlStr);
+                mPointsList = InreachKmlParser.parse(kmlStr);
+                for (InreachPoint point: mPointsList) {
+                    Log.i(TAG,point.toString()+ "\n");
+                }
+
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SAXException e) {
                 e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-            drawPoints(mLatLngList);
+            drawPoints(mPointsList);
             return null;
         }
     }

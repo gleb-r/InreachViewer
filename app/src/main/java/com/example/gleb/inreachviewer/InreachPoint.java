@@ -1,8 +1,6 @@
 package com.example.gleb.inreachviewer;
 
-import android.location.Location;
-
-import java.util.Date;
+import com.google.android.gms.maps.model.LatLng;
 
 /**
  * Created by Gleb on 20.10.2017.
@@ -11,14 +9,42 @@ import java.util.Date;
 public class InreachPoint {
 
     private long id;
-    private Date timeUTC;
-    private Date timeLocal;
+    private String timeUTC;
+    private String timeLocal;
     private String name;
+    private String mapDisplayName;
     private long imei;
-    private Location location;
+    private LatLng latLng;
+    private double elevation;
+    private String velocity;
+    private String course;
     private boolean inEmergency;
     private String text;
     private String event;
+
+    @Override
+    public String toString() {
+        String pointStr = "id=" + String.valueOf(id)
+                + "\n timeUTC=" + timeUTC
+                + "\n timeL=" + timeLocal
+                + "\n name=" + name
+                + "\n maps disp name=" + mapDisplayName
+                + "\n imei=" + imei
+                + ", latlng=" + latLng
+                + ", elevation=" + elevation
+                + ", velocity=" + velocity
+                + ", inEmergency=" + inEmergency
+                + ", text=" + text
+                + ", event=" + event;
+        return pointStr;
+    }
+
+    public String getTag() {
+
+        String tag = velocity +
+                " " + course + " " + elevation + "m";
+        return tag;
+    }
 
     public long getId() {
         return id;
@@ -28,19 +54,19 @@ public class InreachPoint {
         this.id = id;
     }
 
-    public Date getTimeUTC() {
+    public String getTimeUTC() {
         return timeUTC;
     }
 
-    public void setTimeUTC(Date timeUTC) {
+    public void setTimeUTC(String timeUTC) {
         this.timeUTC = timeUTC;
     }
 
-    public Date getTimeLocal() {
+    public String getTimeLocal() {
         return timeLocal;
     }
 
-    public void setTimeLocal(Date timeLocal) {
+    public void setTimeLocal(String timeLocal) {
         this.timeLocal = timeLocal;
     }
 
@@ -52,6 +78,14 @@ public class InreachPoint {
         this.name = name;
     }
 
+    public String getMapDisplayName() {
+        return mapDisplayName;
+    }
+
+    public void setMapDisplayName(String mapDisplayName) {
+        this.mapDisplayName = mapDisplayName;
+    }
+
     public long getImei() {
         return imei;
     }
@@ -60,12 +94,36 @@ public class InreachPoint {
         this.imei = imei;
     }
 
-    public Location getLocation() {
-        return location;
+    public LatLng getLatLng() {
+        return latLng;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public double getElevation() {
+        return elevation;
+    }
+
+    public void setElevation(double elevation) {
+        this.elevation = elevation;
+    }
+
+    public String getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(String velocity) {
+        this.velocity = velocity;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
     }
 
     public boolean isInEmergency() {
@@ -91,7 +149,5 @@ public class InreachPoint {
     public void setEvent(String event) {
         this.event = event;
     }
-
-
 }
 
