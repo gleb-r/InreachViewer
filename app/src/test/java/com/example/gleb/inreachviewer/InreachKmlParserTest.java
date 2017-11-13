@@ -755,7 +755,7 @@ public class InreachKmlParserTest {
                 "    </Folder>\n" +
                 "  </Document>\n" +
                 "</kml>";
-        List<InreachPoint> pointsList = InreachKmlParser.parse(stringXml);
+        List<InreachPoint> pointsList = KmlParser.parse(stringXml);
         InreachPoint lastPointInList = pointsList.get(pointsList.size()-1);
         LatLng expectedPoint = new LatLng(59.654313, 28.994808);
         Assert.assertEquals(expectedPoint, lastPointInList.getLatLng());

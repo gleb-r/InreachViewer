@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">InreachViewer</string>
     <string name="google_maps_key">AIzaSyCmo0iMXDLYo9efRYEHNrM9YTUWcuwUdvs</string>
+    <string name="get_log_txt">Show Log</string>
+    <string name="set_date_txt">Set dates</string>
+    <string name="user_name">PeterBaur</string>
+    <string name="password"></string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -27,8 +27,8 @@ import javax.xml.parsers.ParserConfigurationException;
  * Created by Gleb on 23.10.2017.
  */
 
-public class InreachKmlParser {
-    private static final String TAG = InreachKmlParser.class.getName();
+public class KmlParser {
+    private static final String TAG = KmlParser.class.getName();
 
 
     public static List<InreachPoint> parse(String kmlStr)

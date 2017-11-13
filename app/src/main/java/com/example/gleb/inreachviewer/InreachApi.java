@@ -22,15 +22,18 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class InreachApi {
     public static final String INREACH_API_URL = "https://inreach.garmin.com/feed/Share/";
-    public static final String MAPSHARE_NAME = "GlebRadolitskiy3";
+    public static final String MAPSHARE_NAME = "PeterBaur";
     private static final String TAG = InreachApi.class.getName();
 
+
+
+
     public byte[] getUrlBytes(String urlSpec) throws IOException {
-        final String basicAuth = "Basic " + Base64.encodeToString("GlebRadolitskiy3:ProPan".getBytes(), Base64.NO_WRAP);
+        final String basicAuth = "Basic " + Base64.encodeToString("PeterBaur:ProPan".getBytes(), Base64.NO_WRAP);
         URL url = new URL(urlSpec);
         HttpsURLConnection connection = (HttpsURLConnection) url
                 .openConnection();
-        connection.setRequestProperty("Authorization", basicAuth);
+//        connection.setRequestProperty("Authorization", basicAuth);
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
