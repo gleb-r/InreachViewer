@@ -54,7 +54,7 @@ public class DateFragment extends Fragment implements DatePickerDialog.OnDateSet
         tvDateTo.setOnClickListener(new DateOnClickListener(mDateTo, "TO"));
         Button btnGet = view.findViewById(R.id.btn_get);
         mInreachData = Data.getInstance(getActivity());
-//        mInreachData.registerCallBack(this);
+        mInreachData.getData(mDateFrom, mDateTo);
         btnGet.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,22 +71,25 @@ public class DateFragment extends Fragment implements DatePickerDialog.OnDateSet
         Log.i(TAG, "now = " + calendar.getTime().toString());
         if (mDateTo == null) {
             // Устанавливаем время на сегодняшюю сегодняшюю дату
-            calendar.set(Calendar.HOUR_OF_DAY, 22);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 30);
-            mDateTo = calendar.getTime();
-            Log.i(TAG, "date to = " + mDateTo.toString());
+//            calendar.set(Calendar.HOUR_OF_DAY, 22);
+//            calendar.set(Calendar.MINUTE, 59);
+//            calendar.set(Calendar.SECOND, 30);
+//            mDateTo = calendar.getTime();
+            tvDateTo.setText("null");
+        }else {
+            tvDateTo.setText(dateFormat.format(mDateTo));
         }
-        tvDateTo.setText(dateFormat.format(mDateTo));
         if (mDateFrom == null) {
-            calendar.add(Calendar.MONTH, -2);
+//            calendar.add(Calendar.MONTH, -2);
 //            calendar.add(Calendar.DAY_OF_MONTH, -16);
-            calendar.set(Calendar.HOUR_OF_DAY, 00);
-            calendar.set(Calendar.MINUTE, 00);
-            calendar.set(Calendar.SECOND, 00);
-            mDateFrom = calendar.getTime();
+//            calendar.set(Calendar.HOUR_OF_DAY, 00);
+//            calendar.set(Calendar.MINUTE, 00);
+//            calendar.set(Calendar.SECOND, 00);
+//            mDateFrom = calendar.getTime();
+            tvDateFrom.setText("null");
+        } else {
+            tvDateFrom.setText(dateFormat.format(mDateFrom));
         }
-        tvDateFrom.setText(dateFormat.format(mDateFrom));
     }
 
 
@@ -103,11 +106,16 @@ public class DateFragment extends Fragment implements DatePickerDialog.OnDateSet
 
         @Override
         public void onClick(View view) {
-            if (date == null || label == null) {
+            if (label == null) {
                 return;
             }
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
+            if (date==null) {
+                date = calendar.getTime();
+            } else {
+                calendar.setTime(date);
+            }
+
             DatePickerDialog datePickerDialog =
                     DatePickerDialog.newInstance(
                             DateFragment.getInstance(),

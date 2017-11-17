@@ -6,4 +6,10 @@
     <string name="user_name">PeterBaur</string>
     <string name="password"></string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bottom_sheet_peak">Bottom sheet peek</string>
+    <string name="bottom_sheet_content">Bottom Sheet content</string>
+    <string name="satellite">Satellite</string>
+    <string name="hybrid">Hybrid</string>
+    <string name="terrain">Terrain</string>
+    <string name="normal">Normal</string>
 </resources>

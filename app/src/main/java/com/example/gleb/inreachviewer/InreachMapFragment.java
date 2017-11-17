@@ -39,6 +39,10 @@ public class InreachMapFragment extends SupportMapFragment  {
         return instance;
     }
 
+    void setMapType (int mapType) {
+        mGoogleMap.setMapType(mapType);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,7 @@ public class InreachMapFragment extends SupportMapFragment  {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mGoogleMap = googleMap;
+                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
             }
         });
 
