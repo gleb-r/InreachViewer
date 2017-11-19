@@ -1,63 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/bottom_sheet"
-              android:layout_width="match_parent"
-              android:layout_height="200dp"
-              android:background="@android:color/white"
-              android:orientation="vertical"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/bottom_sheet"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="200dp"
+                                             android:background="@android:color/white"
+                                             android:orientation="vertical"
+                                             app:behavior_hideable="true"
+                                             app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-              app:behavior_hideable="true"
-              app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    <Button
-        android:id="@+id/btnNormal"
+
+    <TextView
+        android:id="@+id/tv_time_span"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/time_span"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnNormal"/>
+
+    <Spinner
+        android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:entries="@array/time_range"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.051"
+
+        app:layout_constraintStart_toEndOf="@+id/tv_time_span"
+        app:layout_constraintTop_toBottomOf="@+id/btnNormal"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="onMapTypeClick"
-        android:text="@string/normal"
-        app:layout_constraintEnd_toStartOf="@+id/btnTerrain"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <Button
-        android:id="@+id/btnTerrain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:onClick="onMapTypeClick"
-        android:text="@string/terrain"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnNormal"
-        app:layout_constraintEnd_toStartOf="@+id/btnHybrid"/>
-
-    <Button
-        android:id="@+id/btnHybrid"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:onClick="onMapTypeClick"
-        android:text="@string/hybrid"
-        app:layout_constraintBaseline_toBaselineOf="@+id/btnNormal"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="60dp"-->
-        <!--android:background="@color/colorAccent"-->
-        <!--android:gravity="center"-->
-        <!--android:text="@string/bottom_sheet_peak"-->
-        <!--android:textColor="@android:color/white"/>-->
-
-
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:gravity="center"-->
-        <!--android:text="@string/bottom_sheet_content"-->
-        <!--android:textColor="@android:color/white"/>-->
 
 </android.support.constraint.ConstraintLayout>
