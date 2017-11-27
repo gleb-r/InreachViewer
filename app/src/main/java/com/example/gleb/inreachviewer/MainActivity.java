@@ -15,57 +15,45 @@ import android.support.v7.app.AlertDialog.Builder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
-import com.google.android.gms.maps.GoogleMap;
+import com.example.gleb.inreachviewer.InreachMapFragment.MapType;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends FragmentActivity implements Data.DataCallBack
+import static com.example.gleb.inreachviewer.DatePreposition.FROM;
+import static com.example.gleb.inreachviewer.DatePreposition.TO;
+import static com.example.gleb.inreachviewer.DatePreposition.values;
+
+
+public class MainActivity
+        extends FragmentActivity
+        implements Data.DataCallBack, DatePickerDialog.OnDateSetListener
 
 {
     private static final String TAG = MainActivity.class.getName();
-    public InreachMapFragment mInreachMapFragment;
-
-    private int checkedMapType = 0;
-
+    InreachMapFragment mInreachMapFragment;
     ConstraintLayout mConstraintLayout;
     BottomSheetBehavior mBottomSheetBehavior;
     FloatingActionButton mFabSettings;
-    Spinner mSpinnerPeriod;
     Data mData;
+    ListView lvDates;
+    Map<DatePreposition, Date> dates;
 
-    Map<Integer,Integer> mapTypes;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mapTypes = new HashMap<>();
-        mapTypes.put(0, GoogleMap.MAP_TYPE_NORMAL);
-        mapTypes.put(1, GoogleMap.MAP_TYPE_TERRAIN);
-        mapTypes.put(2, GoogleMap.MAP_TYPE_HYBRID);
-        mSpinnerPeriod = findViewById(R.id.spinner);
-
-        mSpinnerPeriod.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if (i == 2) {
-
-                }
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        initDateListView();
         mConstraintLayout = findViewById(R.id.bottom_sheet);
         mBottomSheetBehavior = BottomSheetBehavior.from(mConstraintLayout);
         mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
@@ -101,30 +89,68 @@ public class MainActivity extends FragmentActivity implements Data.DataCallBack
                     .commit();
         }
         mData = Data.getInstance(this);
+    }
 
-
-//        Fragment fragmentDate = fragmentManager.findFragmentById(R.id.date_fragment_container);
-//        if (fragmentDate == null) {
-//            fragmentDate = DateFragment.getInstance();
-//            fragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.date_fragment_container, fragmentDate)
-//                    .commit();
-//        }
+    void initDateListView() {
+        lvDates = findViewById(R.id.lv_dates);
+        dates = new HashMap<>();
+        dates.put(FROM, Calendar.getInstance().getTime());
+        dates.put(TO, Calendar.getInstance().getTime());
+        DateViewAdapter adapter = new DateViewAdapter(this, dates);
+        lvDates.setAdapter(adapter);
+        lvDates.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                DatePreposition key = values()[i];
+                Date date = dates.get(key);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                String dialogTag = key.name();
+                DatePickerDialog datePickerDialog = DatePickerDialog.newInstance
+                        (MainActivity.this,
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                        );
+                datePickerDialog.setTitle(dialogTag);
+                datePickerDialog.show(getFragmentManager(), dialogTag);
+            }
+        });
 
     }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        DatePreposition key = DatePreposition.valueOf(view.getTag());
+        Date oldDate = dates.get(key);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(oldDate);
+        calendar.set(year,monthOfYear, dayOfMonth);
+        dates.put(key,calendar.getTime());
+        lvDates.invalidateViews();
+    }
+
+
+
 
     public void onMapTypeClick(View view) {
         AlertDialog.Builder mapTypeDialog = new Builder(this);
         mapTypeDialog.setTitle("Choose map type");
-        String[] mapTypesStr = new String[] {"Normal", "Terrain", "Satellite"};
-        mapTypeDialog.setSingleChoiceItems(mapTypesStr, checkedMapType, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                checkedMapType = i;
-                mInreachMapFragment.setMapType(mapTypes.get(i));
-            }
-        });
+
+        //TODO корявое копирование enum в String[]
+        String[] mapTypesArrayStr = new String[MapType.values().length];
+        for (int i = 0; i < MapType.values().length; i++) {
+            mapTypesArrayStr[i] = MapType.values()[i].name();
+        }
+
+        mapTypeDialog.setSingleChoiceItems
+                (mapTypesArrayStr, MapType.Normal.ordinal(),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mInreachMapFragment.setMapType(MapType.values()[i]);
+                            }
+                        });
         mapTypeDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -134,20 +160,18 @@ public class MainActivity extends FragmentActivity implements Data.DataCallBack
         mapTypeDialog.show();
     }
 
+
     public void onRefreshClick(View view) {
-
-
         if (mData != null) {
             mData.getData(null, null);
         }
-
     }
 
 
     @Override
     public void onDataReceived(List<InreachPoint> points) {
-
-        Toast.makeText(this, "on Data Received Activity", Toast.LENGTH_LONG).show();
         mInreachMapFragment.drawPoints(points);
     }
+
+
 }

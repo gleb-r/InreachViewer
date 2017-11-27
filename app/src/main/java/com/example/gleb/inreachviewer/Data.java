@@ -15,17 +15,19 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Gleb on 31.10.2017.
+ * Singletone class getting and
+ * stores List of InreachPoints
  */
 
-public class Data  {
+class Data  {
     private static Data instance;
     private static final String TAG = Data.class.getName();
 
     interface DataCallBack {
         void onDataReceived(List<InreachPoint> points);
     }
-    DataCallBack mDataCallBack;
 
+    private DataCallBack mDataCallBack;
 
     private List<InreachPoint> mPoints;
     private Date mDateFrom;
@@ -38,38 +40,19 @@ public class Data  {
     }
 
 
-    public static Data getInstance(Context context) {
-
+    static Data getInstance(Context context) {
         if (instance==null) {
             instance = new Data(context);
-
         }
         return instance;
     }
 
-//    public void registerCallBack(DataCallBack callBack) {
-//        this.mDataCallBack = callBack;
-//    }
 
     public void getData(Date dateFrom, Date dateTo) {
         mDateFrom = dateFrom;
         mDateTo = dateTo;
         new FetchItemsTask().execute();
-
-
     }
-
-    public void draw () {
-
-    }
-
-    //    @Override
-//    public void onMapReady(GoogleMap googleMap) {
-//        mMap = googleMap;
-//        FetchItemsTask fetchItemsTask = new FetchItemsTask();
-//        fetchItemsTask.execute();
-//    }
-
 
 
     private class FetchItemsTask extends AsyncTask<Void, Void, Void> {
@@ -81,7 +64,6 @@ public class Data  {
                 for (InreachPoint point : mPoints) {
                      Log.i(TAG, point.toString() + "\n");
                 }
-
             } catch (ParserConfigurationException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -97,12 +79,6 @@ public class Data  {
         @Override
         protected void onPostExecute(Void aVoid) {
             mDataCallBack.onDataReceived(mPoints);
-//            if (mContext != null)
-//            {
-
-                //((MainActivity)mContext).mInreachMapFragment.draw(mPoints);
-                //Log.i(TAG, "Context="+mContext.getApplicationInfo());
-//            }
         }
     }
 }

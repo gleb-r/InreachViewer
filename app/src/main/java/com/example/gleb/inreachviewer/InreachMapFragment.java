@@ -2,7 +2,6 @@ package com.example.gleb.inreachviewer;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 
@@ -25,6 +24,13 @@ public class InreachMapFragment extends SupportMapFragment  {
     private static InreachMapFragment instance;
     private GoogleMap mGoogleMap;
 
+    enum MapType {
+        None,
+        Normal,
+        Satellite,
+        Terrain,
+        Hybrid
+    }
 
 
     public InreachMapFragment() {
@@ -39,8 +45,8 @@ public class InreachMapFragment extends SupportMapFragment  {
         return instance;
     }
 
-    void setMapType (int mapType) {
-        mGoogleMap.setMapType(mapType);
+    void setMapType (MapType mapType) {
+        mGoogleMap.setMapType(mapType.ordinal());
     }
 
     @Override
@@ -66,21 +72,6 @@ public class InreachMapFragment extends SupportMapFragment  {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.menu, menu);
     }
-
-    public void drawPointsOnUIThread(final List<InreachPoint> points) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                drawPoints(points);
-
-            }
-        });
-    }
-
-    public void draw (List<InreachPoint> points) {
-        Log.i(TAG, "num of points= "+points.size());
-    }
-
 
 
     public void drawPoints(final List<InreachPoint> pointsList) {
@@ -161,11 +152,7 @@ public class InreachMapFragment extends SupportMapFragment  {
                 break;
         }
         return Color.argb(alfa,red,green,blue);
-
     }
-
-
-
 }
 
 
