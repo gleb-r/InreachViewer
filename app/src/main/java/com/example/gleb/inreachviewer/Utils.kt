@@ -1,6 +1,8 @@
 @file:JvmName("DateUtils")
 package com.example.gleb.inreachviewer
 
+
+
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -17,14 +19,9 @@ enum class DatePreposition {
 
 fun Date.getDateStr(): String {
     //TODO(Локализация приведениЯ даты и времени)
-    val dateParser = SimpleDateFormat("dd.MM.yyyy hh:mm")
+    val dateParser = SimpleDateFormat("dd.MM.yyyy HH:mm",Locale.US)
     return dateParser.format(this)
-}
 
-//fun setDateYMD(year: Int, month: Int, day: Int):Date {
-//    val calendar = Calendar.getInstance()
-//    calendar.time = this
-//    calendar.set(year, month, day)
-//    return calendar.time
-//}
+//    return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(this)
+}
 

@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.example.gleb.inreachviewer.InreachMapFragment.MapType;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
+import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +35,8 @@ import static com.example.gleb.inreachviewer.DatePreposition.values;
 
 public class MainActivity
         extends FragmentActivity
-        implements Data.DataCallBack, DatePickerDialog.OnDateSetListener
+        implements Data.DataCallBack, DatePickerDialog.OnDateSetListener,
+        TimePickerDialog.OnTimeSetListener
 
 {
     private static final String TAG = MainActivity.class.getName();
@@ -45,8 +47,6 @@ public class MainActivity
     Data mData;
     ListView lvDates;
     Map<DatePreposition, Date> dates;
-
-
 
 
     @Override
@@ -121,16 +121,39 @@ public class MainActivity
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        DatePreposition key = DatePreposition.valueOf(view.getTag());
+        String dialogTag = view.getTag();
+        DatePreposition key = DatePreposition.valueOf(dialogTag);
+        // редактируем старую дату чтобы сохранить значение часов и минут
         Date oldDate = dates.get(key);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(oldDate);
-        calendar.set(year,monthOfYear, dayOfMonth);
-        dates.put(key,calendar.getTime());
+        calendar.set(year, monthOfYear, dayOfMonth);
+        dates.put(key, calendar.getTime());
+        //TODO сделать обновления дат и времени по закрытию фрагмета с выбором времени
         lvDates.invalidateViews();
+        TimePickerDialog timePickerDialog = TimePickerDialog.
+                newInstance(this,
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE),
+                        true);
+        timePickerDialog.setTitle(dialogTag);
+        timePickerDialog.show(getFragmentManager(), dialogTag);
     }
 
 
+    @Override
+    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
+        // TODO повторение кода из onDataSet
+        String dialogTag = view.getTag();
+        DatePreposition key = DatePreposition.valueOf(dialogTag);
+        Date oldDate = dates.get(key);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(oldDate);
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        dates.put(key, calendar.getTime());
+        lvDates.invalidateViews();
+    }
 
 
     public void onMapTypeClick(View view) {
@@ -172,6 +195,5 @@ public class MainActivity
     public void onDataReceived(List<InreachPoint> points) {
         mInreachMapFragment.drawPoints(points);
     }
-
 
 }
