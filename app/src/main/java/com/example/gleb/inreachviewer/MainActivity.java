@@ -1,6 +1,10 @@
 package com.example.gleb.inreachviewer;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -12,15 +16,16 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AlertDialog.Builder;
+import android.support.v7.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.gleb.inreachviewer.InreachMapFragment.MapType;
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -35,10 +40,20 @@ import static com.example.gleb.inreachviewer.DatePreposition.values;
 
 public class MainActivity
         extends FragmentActivity
-        implements Data.DataCallBack, DatePickerDialog.OnDateSetListener,
-        TimePickerDialog.OnTimeSetListener
+        implements Data.DataCallBack {
 
-{
+    enum SeekBarPoints {
+        Now,
+        Today,
+        Yesterday,
+        WeekAgo,
+        MonthAgo,
+        Manual
+        // TODO подумать о переходе к родным значениям
+        // Original Inreach values: All time, Currently Tracking,
+        // Most Resent Track, Last 24 hour, Last 7 days, Custom Date Range
+    }
+
     private static final String TAG = MainActivity.class.getName();
     InreachMapFragment mInreachMapFragment;
     ConstraintLayout mConstraintLayout;
@@ -47,6 +62,9 @@ public class MainActivity
     Data mData;
     ListView lvDates;
     Map<DatePreposition, Date> dates;
+    View highlightedButton;
+
+    SharedPreferences mSharedPreferences;
 
 
     @Override
@@ -89,7 +107,40 @@ public class MainActivity
                     .commit();
         }
         mData = Data.getInstance(this);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        showPreferences();
     }
+
+    private void showPreferences() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TextView tvPref = findViewById(R.id.tv_test_preferences);
+        tvPref.setText(mSharedPreferences.getString("key2", "nothing"));
+
+
+
+    }
+
+    public void onPeriodClick(View view) {
+        if (view instanceof Button) {
+            if (view != highlightedButton) {
+                if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                    view.setBackgroundTintList(getResources().getColorStateList(R.color.colorActiveButton));
+                    if (highlightedButton != null) {
+                        highlightedButton.setBackgroundTintList(null);
+                    }
+                    highlightedButton = view;
+                }
+            }
+        }
+    }
+
 
     void initDateListView() {
         lvDates = findViewById(R.id.lv_dates);
@@ -106,53 +157,10 @@ public class MainActivity
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(date);
                 String dialogTag = key.name();
-                DatePickerDialog datePickerDialog = DatePickerDialog.newInstance
-                        (MainActivity.this,
-                                calendar.get(Calendar.YEAR),
-                                calendar.get(Calendar.MONTH),
-                                calendar.get(Calendar.DAY_OF_MONTH)
-                        );
-                datePickerDialog.setTitle(dialogTag);
-                datePickerDialog.show(getFragmentManager(), dialogTag);
+
             }
         });
 
-    }
-
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String dialogTag = view.getTag();
-        DatePreposition key = DatePreposition.valueOf(dialogTag);
-        // редактируем старую дату чтобы сохранить значение часов и минут
-        Date oldDate = dates.get(key);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(oldDate);
-        calendar.set(year, monthOfYear, dayOfMonth);
-        dates.put(key, calendar.getTime());
-        //TODO сделать обновления дат и времени по закрытию фрагмета с выбором времени
-        lvDates.invalidateViews();
-        TimePickerDialog timePickerDialog = TimePickerDialog.
-                newInstance(this,
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true);
-        timePickerDialog.setTitle(dialogTag);
-        timePickerDialog.show(getFragmentManager(), dialogTag);
-    }
-
-
-    @Override
-    public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-        // TODO повторение кода из onDataSet
-        String dialogTag = view.getTag();
-        DatePreposition key = DatePreposition.valueOf(dialogTag);
-        Date oldDate = dates.get(key);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(oldDate);
-        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-        calendar.set(Calendar.MINUTE, minute);
-        dates.put(key, calendar.getTime());
-        lvDates.invalidateViews();
     }
 
 

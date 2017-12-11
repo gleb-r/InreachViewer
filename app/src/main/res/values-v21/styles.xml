@@ -1,13 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base application theme. -->
 
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-    </style>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <item name="alertDialogTheme">
+            @style/Theme.AppCompat.DayNight.Dialog.Alert
+        </item>
 
+    </style>
 </resources>

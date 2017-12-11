@@ -5,7 +5,6 @@
     <string name="set_date_txt">Set dates</string>
     <string name="user_name">PeterBaur</string>
     <string name="password"></string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="bottom_sheet_peak">Bottom sheet peek</string>
     <string name="bottom_sheet_content">Bottom Sheet content</string>
     <string name="satellite">Satellite</string>
@@ -13,6 +12,9 @@
     <string name="terrain">Terrain</string>
     <string name="normal">Normal</string>
     <string name="time_span">Time span</string>
+    <string name="Yesterday">Yesterday</string>
+    <string name="last_point">last point</string>
+    <string name="Today">today</string>
     <string-array name="time_range">
         <item>All</item>
         <item>Last point</item>
@@ -23,5 +25,6 @@
         <item>Normal</item>
         <item>Satellite</item>
     </string-array>
+
 </resources>
 
